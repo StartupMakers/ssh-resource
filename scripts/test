@@ -6,7 +6,7 @@ not_installed() {
   ! command -v $1 > /dev/null 2>&1
 }
 
-git_resource_dir=$(cd $(dirname $0)/.. && pwd)
+resource_dir=$(cd $(dirname $0)/.. && pwd)
 
 if not_installed docker; then
   echo "# docker is not installed! run the following commands:"
@@ -18,5 +18,5 @@ if not_installed docker; then
   exit 1
 fi
 
-cd $git_resource_dir
+cd $resource_dir
 docker build --rm .
