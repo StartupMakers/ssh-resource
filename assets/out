@@ -50,7 +50,15 @@ echo "connecting to $connection to run [ $command ]..."
 
 ssh $connection $command
 
-#jq -n "{
-#  version: {ref: $(git rev-parse HEAD | jq -R .)},
-#  metadata: $(git_metadata)
-#}" >&3
+timestamp=$(date)
+
+jq -n '{
+  "version": {
+    "Updated at": $timestamp
+  },
+  "metadata": [
+    {"name": "namespace", "value": $namespace}
+  ]
+}' --arg timestamp "$timestamp" --arg namespace "$namespace" >&3
+
+exit 0
