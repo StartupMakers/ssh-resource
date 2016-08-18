@@ -1,51 +1,12 @@
-#!/bin/bash
-# vim: set ft=sh
+#!/bin/sh
 
 set -e
 
 exec 3>&1 # make stdout available as fd 3 for the result
 exec 1>&2 # redirect all output to stderr for logging
 
-source $(dirname $0)/common.sh
-
-source=$1
-
-if [ -z "$source" ]; then
-  echo "usage: $0 <path/to/source>"
-  exit 1
-fi
-
-# for jq
 PATH=/usr/local/bin:$PATH
 
-payload=$(mktemp $TMPDIR/ssh-resource-request.XXXXXX)
+echo '[]' >&3
 
-cat > $payload <&0
-
-load_pubkey $payload
-configure_credentials $payload
-
-host=$(jq -r '.source.host // ""' < $payload)
-username=$(jq -r '.source.username // ""' < $payload)
-command=$(jq -r '.params.command // ""' < $payload)
-
-if [ -z "$host" ]; then
-  echo "invalid payload (missing host)"
-  exit 1
-fi
-
-cd $source
-
-if [ -z "$username" ]; then
-  connection = $host
-else
-  connection = "$username@$host"
-fi
-
-echo "connecting to $connection to run [ $command ]..."
-
-ssh $connection $command
-
-#  {
-#    git log $ci_skip --format='%H' --first-parent $log_range $paths_search
-#  } | jq -R '.' | jq -s "map({ref: .})" >&3
+exit 0

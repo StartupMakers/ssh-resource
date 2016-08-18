@@ -1,56 +1,21 @@
-#!/bin/bash
-# vim: set ft=sh
+#!/bin/sh
 
 set -e
 
 exec 3>&1 # make stdout available as fd 3 for the result
 exec 1>&2 # redirect all output to stderr for logging
 
-source $(dirname $0)/common.sh
+PATH=/usr/local/bin:$PATH
 
-destination=$1
+destination_dir=$1
 
-if [ -z "$destination" ]; then
+if [ -z "$destination_dir" ]; then
   echo "usage: $0 <path/to/destination>" >&2
   exit 1
 fi
 
-# for jq
-PATH=/usr/local/bin:$PATH
+mkdir -p $destination_dir
 
-payload=$(mktemp $TMPDIR/ssh-resource-request.XXXXXX)
+echo '{}' >&3
 
-cat > $payload <&0
-
-load_pubkey $payload
-configure_credentials $payload
-
-host=$(jq -r '.source.host // ""' < $payload)
-username=$(jq -r '.source.username // ""' < $payload)
-password=$(jq -r '.source.password // ""' < $payload)
-command=$(jq -r '.params.command // ""' < $payload)
-
-if [ -z "$host" ]; then
-  echo "invalid payload (missing host)"
-  exit 1
-fi
-
-cd $destination
-
-connection=""
-if [ -z "$username" ]; then
-  connection="$host"
-elif [ -z "$password" ]; then
-  connection="$username@$host"
-else
-  connection="$username:$password@$host"
-fi
-
-echo "connecting to $connection to run [ $command ]..."
-
-ssh $connection $command
-
-#jq -n "{
-#  version: {ref: $(git rev-parse HEAD | jq -R .)},
-#  metadata: $(git_metadata)
-#}" >&3
+exit 0

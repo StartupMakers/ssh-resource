@@ -22,8 +22,22 @@ payload=$(mktemp $TMPDIR/ssh-resource-request.XXXXXX)
 
 cat > $payload <&0
 
-load_pubkey $payload
-configure_credentials $payload
+# load_pubkey $payload
+# configure_credentials $payload
+
+TMPDIR=${TMPDIR:-/tmp}
+private_key_path=$TMPDIR/ssh-resource-private-key
+(jq -r '.source.private_key // empty' < $payload) > $private_key_path
+
+if [ -s "$private_key_path" ]; then
+  chmod 0600 $private_key_path
+fi
+
+# to avoid "Are you sure you want to continue connecting?"
+mkdir -p ~/.ssh
+cat > ~/.ssh/config <<EOF
+StrictHostKeyChecking no
+EOF
 
 host=$(jq -r '.source.host // ""' < $payload)
 username=$(jq -r '.source.username // ""' < $payload)
@@ -32,6 +46,11 @@ command=$(jq -r '.params.command // ""' < $payload)
 
 if [ -z "$host" ]; then
   echo "invalid payload (missing host)"
+  exit 1
+fi
+
+if [ -z "$command" ]; then
+  echo "invalid payload (missing command)"
   exit 1
 fi
 
@@ -46,19 +65,20 @@ else
   connection="$username:$password@$host"
 fi
 
-echo "connecting to $connection to run [ $command ]..."
+echo "connecting to $connection to run ( $command )..."
 
-ssh $connection $command
+ssh -i $private_key_path $connection $command
 
 timestamp=$(date)
 
 jq -n '{
   "version": {
-    "Updated at": $timestamp
+    "Executed at": $timestamp
   },
   "metadata": [
-    {"name": "namespace", "value": $namespace}
+    {"name": "connection", "value": $connection},
+    {"name": "command", "value": $command}
   ]
-}' --arg timestamp "$timestamp" --arg namespace "$namespace" >&3
+}' --arg timestamp "$timestamp" --arg connection "$connection" --arg command "$command" >&3
 
 exit 0
