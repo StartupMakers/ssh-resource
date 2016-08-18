@@ -60,3 +60,7 @@ Connect to the server and re-start Docker container:
 #### Parameters
 
 * `command`: *Optional.*
+
+## Thanks
+
+Originally based on [git-resource](https://github.com/concourse/git-resource) extension by Concourse team.
