@@ -10,9 +10,9 @@ Executes specified commands on a remote host using SSH.
 
 * `password`: Password for specified username.
 
-* `private_key`: *Optional.* Private key to use when connecting.
-    Example:
-    ```
+* `private_key`: *Optional.* Private key to use when connecting. Example:
+
+    ```yaml
     private_key: |
       -----BEGIN RSA PRIVATE KEY-----
       MIIEowIBAAKCAQEAtCS10/f7W7lkQaSgD/mVeaSOvSF9ql4hf/zfMwfVGgHWjj+W
@@ -25,7 +25,7 @@ Executes specified commands on a remote host using SSH.
 
 Resource configuration for a private repo:
 
-``` yaml
+```yaml
 resources:
 - name: source-code
   type: git
@@ -55,11 +55,11 @@ Connect to the server and re-start Docker container:
 
 ## Behavior
 
-### `out`: Execute the command on a remote server
+### `out`: Execute specified command on a remote server
 
 #### Parameters
 
-* `command`: *Optional.*
+* `command`: *Required.*
 
 ## Thanks
 
