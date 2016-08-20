@@ -50,7 +50,7 @@ Connect to the server and re-start Docker container:
       passed: [build]
     - put: target-server
       params:
-        command: 'docker pull my-app:latest && docker stop my-app && docker run --name my-app my-app'
+        command: 'docker stop my-app; docker rm -v -f my-app; docker pull my-private.com:5000/my-app && docker run -d -p 80:80 --restart=always --name my-app my-private.com:5000/my-app'
 ```
 
 ## Behavior
