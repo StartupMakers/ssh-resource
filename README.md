@@ -8,7 +8,7 @@ Executes specified commands on a remote host using SSH.
 
 * `username`: *Required.* The username which will be used.
 
-* `password`: Password for specified username.
+* `password`: *Optional.* Password for specified username.
 
 * `private_key`: *Optional.* Private key to use when connecting. Example:
 
